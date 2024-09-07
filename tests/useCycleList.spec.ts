@@ -1,29 +1,76 @@
-import { describe, it, expect, beforeEach, test } from 'vitest'
+import { describe, it, expect } from 'vitest'
+import { toValue, shallowRef } from 'vue'
 
 import { useCycleList } from '../src/composables/useCycleList'
 
 describe('useCycleList', () => {
-    test.todo(
-        'returns the first item in the array as the state before prev or next',
-        () => {},
-    )
-    test.todo('sets state to the next item in the array on next()', () => {})
+    const arr = [1, 2, 3]
 
-    test.todo(
-        'sets state to the previous item in the array on prev()',
-        () => {},
-    )
+    it('returns the first item in the array as the state before prev or next', () => {
+        const { state } = useCycleList(arr)
 
-    test.todo('cycles to the end on prev if at beginning', () => {})
+        expect(toValue(state)).toBe(1)
+    })
+    it('sets state to the next item in the array on next()', () => {
+        const { state, next } = useCycleList(arr)
 
-    test.todo('cycles to the beginning on next if at the end', () => {})
+        next() // 2
+        expect(toValue(state)).toBe(2)
+    })
 
-    test.todo('Bonus: works with refs', () => {})
+    it('sets state to the previous item in the array on prev()', () => {
+        const { state, next, prev } = useCycleList(arr)
 
-    test.todo('Bonus: works when the provided ref changes value', () => {})
+        next() // 2
+        prev() // 1
+        expect(toValue(state)).toBe(1)
+    })
 
-    test.todo(
-        "Bonus: resets index to 0 if updated ref doesn't include the activeIndex",
-        async () => {},
-    )
+    it('cycles to the end on prev if at beginning', () => {
+        const { state, prev } = useCycleList(arr)
+
+        prev() // 3 (return to the end)
+        expect(toValue(state)).toBe(3)
+    })
+
+    it('cycles to the beginning on next if at the end', () => {
+        const { state, next } = useCycleList(arr)
+
+        next() // 2
+        next() // 3
+        next() // 1 (return to the beginning)
+        expect(toValue(state)).toBe(1)
+    })
+
+    it('Bonus: works with refs', () => {
+        const refArr = shallowRef<number[]>(arr)
+        const { state, next, prev } = useCycleList(refArr)
+
+        next() // 2
+        prev() // 1
+        expect(toValue(state)).toBe(1)
+    })
+
+    it('Bonus: works when the provided ref changes value', () => {
+        const refArr = shallowRef<number[]>(arr)
+        const { state, next } = useCycleList(refArr)
+
+        next() // 2
+        next() // 3
+        refArr.value.push(4) // [1, 2, 3, 4]
+        next() // 4
+        expect(toValue(state)).toBe(4)
+    })
+
+    it("Bonus: resets index to 0 if updated ref doesn't include the activeIndex", () => {
+        const refArr = shallowRef<number[]>(arr)
+        const { state, next } = useCycleList(refArr)
+
+        next() // 2
+        next() // 3
+
+        refArr.value = [1, 2] // 3 is undefined in the new array
+
+        expect(toValue(state)).toBe(1)
+    })
 })

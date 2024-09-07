@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { shallowRef } from 'vue'
 import { useCycleList } from '@/composables/useCycleList'
 
-// @ts-expect-error Expected 0 arguments, but got 1
-const { state, next, prev } = useCycleList([
+const list = shallowRef<string[]>([
     'Dog',
     'Cat',
     'Lizard',
@@ -12,6 +12,8 @@ const { state, next, prev } = useCycleList([
     'Octopus',
     'Seal',
 ])
+
+const { state, next, prev } = useCycleList<string>(list)
 </script>
 
 <template>
