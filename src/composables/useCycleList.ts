@@ -5,6 +5,7 @@ interface CycleList<T> {
     prev: () => void
     next: () => void
     state: MaybeRefOrGetter<T>
+    getPlain: () => T[]
 }
 
 export const useCycleList = <T>(
@@ -42,5 +43,8 @@ export const useCycleList = <T>(
 
             return result[firstIndex]
         }),
+        getPlain: () => {
+            return toValue(resultArr)
+        },
     }
 }

@@ -73,4 +73,11 @@ describe('useCycleList', () => {
 
         expect(toValue(state)).toBe(1)
     })
+
+    it('Bonus: support the taking in an array, a reactive array (defined with ref), a getter function that returns an array.', () => {
+        const refArr = shallowRef<number[]>(arr)
+        const { getPlain } = useCycleList(refArr)
+
+        expect(getPlain()).toEqual(refArr.value)
+    })
 })
